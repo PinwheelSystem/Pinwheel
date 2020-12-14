@@ -3,10 +3,12 @@ package main
 import (
 	"math/rand"
 	"fmt"
+	"time"
+	"os"
 
 	"github.com/veandco/go-sdl2/sdl"
-	//"github.com/veandco/go-sdl2/ttf"
 	"github.com/yuin/gopher-lua"
+	"github.com/muesli/gamut"
 )
 
 const version = "v0.0.1"
@@ -16,9 +18,15 @@ var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
 
 func main() {
+	colors, _ := gamut.Generate(64, gamut.PastelGenerator{})
 	for i := uint8(0); i < 64; i++ {
-		// Generate a palette
-		palette[i] = []uint8{i*4%255, i*4%255, i*4%255}
+		r, g, b, _ := colors[i].RGBA()
+		palette[i] = []uint8{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)}
+	}
+
+	var program string = "program.lua"
+	if len(os.Args) != 1{
+		program = os.Args[1] 
 	}
 	
 	L := lua.NewState()
@@ -55,7 +63,7 @@ func main() {
 	}
 	defer screen.Destroy()
 
-	if err := L.DoFile("program.lua"); err != nil {
+	if err := L.DoFile(program); err != nil {
 		panic(err)
 	}
 	defer L.Close()
@@ -72,7 +80,6 @@ func main() {
 		}
 
 		renderer.SetDrawColor(0, 0, 0, 0)
-		renderer.Clear()
 
 		// Call the Spin function from Lua
 		if err := L.CallByParam(lua.P{
@@ -89,6 +96,8 @@ func main() {
 
 		// Flush screen
 		renderer.Present()
+
+		time.Sleep(16 * time.Millisecond)
 	}
 }
 
@@ -113,7 +122,7 @@ func PWplot(L *lua.LState) int {
 	color := L.ToInt(3)
 
 	c := palette[color]
-	setpixel(x, y, int(c[0]), int(c[0]), int(c[0]))
+	setpixel(x, y, int(c[0]), int(c[1]), int(c[2]))
 
 	return 1
 }
