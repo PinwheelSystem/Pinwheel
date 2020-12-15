@@ -16,6 +16,7 @@ const res int = 128 // Resolution of the *screen* ("internal") . Might change la
 const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
+var start time.Time
 
 func main() {
 	colors, _ := gamut.Generate(64, gamut.PastelGenerator{})
@@ -37,6 +38,7 @@ func main() {
 	L.SetGlobal("vpoke", L.NewFunction(PWvPoke))
 	L.SetGlobal("plot", L.NewFunction(PWplot))
 	L.SetGlobal("termprint", L.NewFunction(PWtermPrint))
+	L.SetGlobal("time", L.NewFunction(PWtime))
 
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -70,6 +72,7 @@ func main() {
 
 	// "CPU Cycle," our main loop
 	running := true
+	start = time.Now()
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -132,6 +135,16 @@ func PWtermPrint(L *lua.LState) int {
 	text := L.ToString(1)
 
 	fmt.Println(text)
+
+	return 1
+}
+
+// time() -> float64
+func PWtime(L *lua.LState) int {
+	current := time.Now()
+	duration := float64(current.Sub(start)) / 1000000 / 1000
+
+	L.Push(lua.LNumber(duration))
 
 	return 1
 }
