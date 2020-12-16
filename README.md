@@ -21,3 +21,5 @@ Stay tuned though, I'm spending my entire holiday to work on this little thing a
 - `termprint(text)` - Print text to the terminal
 - `vpoke(address, value)` - Write `value` to VRAM `address`
 - `plot(x, y, color)` - Place pixel at `x, y` with palette color number `color`
+- `time()` -> `number` - Gets the amount of time since boot.
+- `pchar(char, x, y)` - Place `char`acter at `x, y`
