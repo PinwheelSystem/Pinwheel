@@ -5,21 +5,25 @@ import (
 	"fmt"
 	"time"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/yuin/gopher-lua"
 	"github.com/muesli/gamut"
 )
 
-const version = "v0.0.1"
+const version = "v0.0.2"
 const res int = 128 // Resolution of the *screen* ("internal") . Might change later in development. (res x res, 128 x 128)
 const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
 var start time.Time
+var font [][]uint16 = make([][]uint16, 36)
 
 func main() {
 	colors, _ := gamut.Generate(64, gamut.PastelGenerator{})
+	font = [][]uint16{{0xf, 0x9, 0x9, 0xf, 0x9, 0x9}}
 	for i := uint8(0); i < 64; i++ {
 		r, g, b, _ := colors[i].RGBA()
 		palette[i] = []uint8{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)}
@@ -39,6 +43,7 @@ func main() {
 	L.SetGlobal("plot", L.NewFunction(PWplot))
 	L.SetGlobal("termprint", L.NewFunction(PWtermPrint))
 	L.SetGlobal("time", L.NewFunction(PWtime))
+	L.SetGlobal("pchar", L.NewFunction(PWpchar))
 
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -59,6 +64,9 @@ func main() {
 	}
 	defer renderer.Destroy()
 
+	//cursortexture, _ := sdl.LoadBMP("cursor.bmp")
+	//cursor := sdl.CreateColorCursor(cursortexture, 0, 0)
+
 	screen, err := renderer.CreateTexture(sdl.PIXELFORMAT_ARGB8888, sdl.TEXTUREACCESS_STREAMING, int32(res), int32(res))
 	if err != nil {
 		panic(err)
@@ -73,6 +81,7 @@ func main() {
 	// "CPU Cycle," our main loop
 	running := true
 	start = time.Now()
+	//sdl.SetCursor(cursor)
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -145,6 +154,32 @@ func PWtime(L *lua.LState) int {
 	duration := float64(current.Sub(start)) / 1000000 / 1000
 
 	L.Push(lua.LNumber(duration))
+
+	return 1
+}
+
+// pchar(single_char, x, y)
+func PWpchar(L *lua.LState) int {
+	char := L.ToString(1)
+	x := L.ToInt(2)
+	y := L.ToInt(3)
+	
+	switch char {
+		case "A":
+			xx := x
+			yy := y
+			for i := 0; i < 6; i++ {
+			 	bin := strconv.FormatInt(int64(font[0][i]), 2)
+			 	binarr := strings.Split(bin, "")
+
+			 	for _, pix := range binarr {
+			 		if pix == "1" { setpixel(xx, yy, 69, 153, 77) }
+			 		xx += 1
+			 	}
+			 	yy += 1
+			 	xx = x
+			}
+	}
 
 	return 1
 }
