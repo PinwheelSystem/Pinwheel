@@ -5,25 +5,27 @@ import (
 	"fmt"
 	"time"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/yuin/gopher-lua"
 	"github.com/muesli/gamut"
+	"github.com/PinwheelSystem/bitmap"	
 )
 
-const version = "v0.0.2"
+const version = "v0.0.3"
 const res int = 128 // Resolution of the *screen* ("internal") . Might change later in development. (res x res, 128 x 128)
 const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
 var start time.Time
-var font [][]uint16 = make([][]uint16, 36)
+var font map[string][]string
 
 func main() {
 	colors, _ := gamut.Generate(64, gamut.PastelGenerator{})
-	font = [][]uint16{{0xf, 0x9, 0x9, 0xf, 0x9, 0x9}}
+	bm := bitmap.New()
+	font = bm.Load("font.png")
+
 	for i := uint8(0); i < 64; i++ {
 		r, g, b, _ := colors[i].RGBA()
 		palette[i] = []uint8{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)}
@@ -164,21 +166,18 @@ func PWpchar(L *lua.LState) int {
 	x := L.ToInt(2)
 	y := L.ToInt(3)
 	
-	switch char {
-		case "A":
-			xx := x
-			yy := y
-			for i := 0; i < 6; i++ {
-			 	bin := strconv.FormatInt(int64(font[0][i]), 2)
-			 	binarr := strings.Split(bin, "")
+	xx := x
+	yy := y
+	for i := 0; i < 8; i++ {
+	 	bin := font[char][i]
+	 	binarr := strings.Split(bin, "")
 
-			 	for _, pix := range binarr {
-			 		if pix == "1" { setpixel(xx, yy, 69, 153, 77) }
-			 		xx += 1
-			 	}
-			 	yy += 1
-			 	xx = x
-			}
+	 	for _, pix := range binarr {
+	 		if pix == "1" { setpixel(xx, yy, 69, 153, 77) }
+		 	xx += 1
+		}
+		yy += 1
+		xx = x
 	}
 
 	return 1
