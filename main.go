@@ -11,21 +11,26 @@ import (
 	"github.com/yuin/gopher-lua"
 	"github.com/PinwheelSystem/bitmap"
 	"github.com/PinwheelSystem/PaletteNom"
+	"github.com/chuckpreslar/emission"
+	"layeh.com/gopher-luar"
 )
 
-const version = "v0.0.4"
+const version = "v0.1.0"
 const res int = 128 // Resolution of the *screen* ("internal") . Might change later in development. (res x res, 128 x 128)
 const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
 var start time.Time
 var font map[string][]string
+var renderer *sdl.Renderer
 
 func main() {
 	palettelib := palettenom.New()
 	colors/*, _*/ := palettelib.Load("aap-64.png")
 	bm := bitmap.New()
 	font = bm.Load("font.png")
+	emitter := emission.NewEmitter()
+	events := emitter
 
 	for i := uint8(0); i < 64; i++ {
 		r, g, b, _ := colors[i].RGBA()
@@ -47,6 +52,12 @@ func main() {
 	L.SetGlobal("termprint", L.NewFunction(PWtermPrint))
 	L.SetGlobal("time", L.NewFunction(PWtime))
 	L.SetGlobal("pchar", L.NewFunction(PWpchar))
+	L.SetGlobal("vertline", L.NewFunction(PWvertline))
+	L.SetGlobal("horizline", L.NewFunction(PWhorizline))
+	L.SetGlobal("clear", L.NewFunction(PWclear))
+
+	// Add event emitter
+    L.SetGlobal("events", luar.New(L, events))
 
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -61,7 +72,7 @@ func main() {
 	}
 	defer window.Destroy()
 
-	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
 		panic(err)
 	}
@@ -84,17 +95,25 @@ func main() {
 	// "CPU Cycle," our main loop
 	running := true
 	start = time.Now()
+	c := palette[0]
+	renderer.SetDrawColor(int(c[0]), int(c[1]), int(c[2]), sdl.ALPHA_OPAQUE)
 	//sdl.SetCursor(cursor)
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch e := event.(type) {
 				case *sdl.QuitEvent:
 					running = false
 					break
+				case *sdl.MouseButtonEvent:
+					if e.Type == sdl.MOUSEBUTTONDOWN { emitter.Emit("mouseClick", e.X, e.Y) }
+				case *sdl.MouseMotionEvent:
+					if _, _, state := sdl.GetMouseState(); state & sdl.Button(sdl.BUTTON_LEFT) == 1 {
+						emitter.Emit("mouseDrag", e.X, e.Y)
+					} else {
+						emitter.Emit("mouseMove", e.X, e.Y)
+					}
 			}
 		}
-
-		renderer.SetDrawColor(0, 0, 0, 0)
 
 		// Call the Spin function from Lua
 		if err := L.CallByParam(lua.P{
@@ -179,6 +198,44 @@ func PWpchar(L *lua.LState) int {
 		}
 		yy += 1
 		xx = x
+	}
+
+	return 1
+}
+
+// vertline(y, color)
+func PWvertline(L *lua.LState) int {
+	y := L.ToInt(1)
+	color := L.ToInt(2)
+	
+	for i := 0; i < res; i++ {
+		c := palette[color]
+		setpixel(i, y, int(c[0]), int(c[1]), int(c[2]))
+	}
+
+	return 1
+}
+
+// horizline(x, color)
+func PWhorizline(L *lua.LState) int {
+	x := L.ToInt(1)
+	color := L.ToInt(2)
+	
+	for i := 0; i < res; i++ {
+		c := palette[color]
+		setpixel(x, i, int(c[0]), int(c[1]), int(c[2]))
+	}
+
+	return 1
+}
+
+func PWclear(L *lua.LState) int {
+	c := palette[0]
+
+	for y := 0; y < res; y++ {
+		for x := 0; x < res; x++ {
+			setpixel(x, y, int(c[0]), int(c[1]), int(c[2]))
+		}
 	}
 
 	return 1
