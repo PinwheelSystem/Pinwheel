@@ -9,11 +9,11 @@ import (
 
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/yuin/gopher-lua"
-	"github.com/muesli/gamut"
-	"github.com/PinwheelSystem/bitmap"	
+	"github.com/PinwheelSystem/bitmap"
+	"github.com/PinwheelSystem/PaletteNom"
 )
 
-const version = "v0.0.3"
+const version = "v0.0.4"
 const res int = 128 // Resolution of the *screen* ("internal") . Might change later in development. (res x res, 128 x 128)
 const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
@@ -22,7 +22,8 @@ var start time.Time
 var font map[string][]string
 
 func main() {
-	colors, _ := gamut.Generate(64, gamut.PastelGenerator{})
+	palettelib := palettenom.New()
+	colors/*, _*/ := palettelib.Load("aap-64.png")
 	bm := bitmap.New()
 	font = bm.Load("font.png")
 
