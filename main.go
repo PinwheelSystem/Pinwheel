@@ -96,7 +96,7 @@ func main() {
 	running := true
 	start = time.Now()
 	c := palette[0]
-	renderer.SetDrawColor(int(c[0]), int(c[1]), int(c[2]), sdl.ALPHA_OPAQUE)
+	renderer.SetDrawColor(c[0], c[1], c[2], sdl.ALPHA_OPAQUE)
 	//sdl.SetCursor(cursor)
 	for running {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
