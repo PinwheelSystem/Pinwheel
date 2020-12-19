@@ -263,7 +263,7 @@ func PWprint(L *lua.LState) int {
 			binarr := strings.Split(bin, "")
 
 			for _, pix := range binarr {
-				if pix == "1" { setpixel(xx + sx, yy, int(c[0]), int(c[1]), int(c[2])) }
+				if pix == "1" { setpixel(xx + sx, char.Y + yy, int(c[0]), int(c[1]), int(c[2])) }
 			 	xx += 1
 			}
 			yy += 1
