@@ -203,30 +203,32 @@ func PWpchar(L *lua.LState) int {
 		xx = x
 	}
 
+	L.Push(lua.LNumber(font[char].Width))
+
 	return 1
 }
 
-// vertline(y, color)
+// vertline(x, color)
 func PWvertline(L *lua.LState) int {
-	y := L.ToInt(1)
-	color := L.ToInt(2)
-	
-	for i := 0; i < res; i++ {
-		c := palette[color]
-		setpixel(i, y, int(c[0]), int(c[1]), int(c[2]))
-	}
-
-	return 1
-}
-
-// horizline(x, color)
-func PWhorizline(L *lua.LState) int {
 	x := L.ToInt(1)
 	color := L.ToInt(2)
 	
 	for i := 0; i < res; i++ {
 		c := palette[color]
 		setpixel(x, i, int(c[0]), int(c[1]), int(c[2]))
+	}
+
+	return 1
+}
+
+// horizline(y, color)
+func PWhorizline(L *lua.LState) int {
+	y := L.ToInt(1)
+	color := L.ToInt(2)
+	
+	for i := 0; i < res; i++ {
+		c := palette[color]
+		setpixel(i, y, int(c[0]), int(c[1]), int(c[2]))
 	}
 
 	return 1
@@ -260,10 +262,9 @@ func PWprint(L *lua.LState) int {
 		char := font[string(ch)]
 		for i := 0; i < char.Height; i++ {
 		 	bin := char.Data[i]
-			binarr := strings.Split(bin, "")
 
-			for _, pix := range binarr {
-				if pix == "1" { setpixel(xx + sx, char.Y + yy, int(c[0]), int(c[1]), int(c[2])) }
+			for _, pix := range bin {
+				if string(pix) == "1" { setpixel(xx + sx, char.Y + yy, int(c[0]), int(c[1]), int(c[2])) }
 			 	xx += 1
 			}
 			yy += 1
