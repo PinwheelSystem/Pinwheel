@@ -73,6 +73,7 @@ Events should be outside the `Spin` function.
 Callback arguments:
   - `x` X coordinate of the location of the click
   - `y` Y coordinate of the location of the click
+
 Emitted when a user clicks the mouse.
 
 > ⚠ The `x` and `y` values must be divided by 4 to apply to Pinwheel's internal resolution!
@@ -80,7 +81,8 @@ Emitted when a user clicks the mouse.
 #### mouseDrag
 Callback arguments:
   - `x` X coordinate of the current cursor location
-  - `y` Y coordinate of the current cursor location 
+  - `y` Y coordinate of the current cursor location
+
 Emitted when a user holds a mouse button and moves the mouse.
 
 > ⚠ The `x` and `y` values must be divided by 4 to apply to Pinwheel's internal resolution!
@@ -89,6 +91,7 @@ Emitted when a user holds a mouse button and moves the mouse.
 Callback arguments:
   - `x` X coordinate of the location of the cursor
   - `y` Y coordinate of the location of the cursor
+
 Emitted when a user moves the mouse.
 
 > ⚠ The `x` and `y` values must be divided by 4 to apply to Pinwheel's internal resolution!
