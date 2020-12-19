@@ -21,14 +21,14 @@ const scale = 4 // Resolution scale (contributes to the size of the *window*)
 var palette [][]uint8 = make([][]uint8, 64) // Array of array of RGB values ([[R, G, B], [R, G, B], ...])
 var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically our VRAM)
 var start time.Time
-var font map[string][]string
+var font map[string]bitmap.Glyph
 var renderer *sdl.Renderer
 
 func main() {
 	palettelib := palettenom.New()
 	colors/*, _*/ := palettelib.Load("aap-64.png")
 	bm := bitmap.New()
-	font = bm.Load("font.png")
+	font = bm.Load("m5x7.png")
 	emitter := emission.NewEmitter()
 	events := emitter
 
@@ -55,6 +55,7 @@ func main() {
 	L.SetGlobal("vertline", L.NewFunction(PWvertline))
 	L.SetGlobal("horizline", L.NewFunction(PWhorizline))
 	L.SetGlobal("clear", L.NewFunction(PWclear))
+	L.SetGlobal("print", L.NewFunction(PWprint))
 
 	// Add event emitter
     L.SetGlobal("events", luar.New(L, events))
@@ -109,9 +110,8 @@ func main() {
 				case *sdl.MouseMotionEvent:
 					if _, _, state := sdl.GetMouseState(); state & sdl.Button(sdl.BUTTON_LEFT) == 1 {
 						emitter.Emit("mouseDrag", e.X, e.Y)
-					} else {
-						emitter.Emit("mouseMove", e.X, e.Y)
 					}
+					emitter.Emit("mouseMove", e.X, e.Y)
 			}
 		}
 
@@ -180,20 +180,23 @@ func PWtime(L *lua.LState) int {
 	return 1
 }
 
-// pchar(single_char, x, y)
+// pchar(single_char, x, y, color)
 func PWpchar(L *lua.LState) int {
 	char := L.ToString(1)
 	x := L.ToInt(2)
 	y := L.ToInt(3)
-	
+	color := L.ToInt(4)
+
+	c := palette[color]
 	xx := x
 	yy := y
-	for i := 0; i < 8; i++ {
-	 	bin := font[char][i]
-	 	binarr := strings.Split(bin, "")
 
-	 	for _, pix := range binarr {
-	 		if pix == "1" { setpixel(xx, yy, 69, 153, 77) }
+	for i := 0; i < 8; i++ {
+	 	bin := font[char].Data[i]
+		binarr := strings.Split(bin, "")
+
+		for _, pix := range binarr {
+			if pix == "1" { setpixel(xx, yy, int(c[0]), int(c[1]), int(c[2])) }
 		 	xx += 1
 		}
 		yy += 1
@@ -236,6 +239,37 @@ func PWclear(L *lua.LState) int {
 		for x := 0; x < res; x++ {
 			setpixel(x, y, int(c[0]), int(c[1]), int(c[2]))
 		}
+	}
+
+	return 1
+}
+
+// print(text, x, y, color)
+func PWprint(L *lua.LState) int {
+	text := L.ToString(1)
+	x := L.ToInt(2)
+	y := L.ToInt(3)
+	color := L.ToInt(4)
+
+	c := palette[color]
+	xx := x
+	sx := x
+	yy := y
+
+	for _, ch := range text {
+		for i := 0; i < 8; i++ {
+		 	bin := font[string(ch)].Data[i]
+			binarr := strings.Split(bin, "")
+
+			for _, pix := range binarr {
+				if pix == "1" { setpixel(xx + sx, yy, int(c[0]), int(c[1]), int(c[2])) }
+			 	xx += 1
+			}
+			yy += 1
+			xx = x
+		}
+		sx += font[string(ch)].Width
+		yy = y
 	}
 
 	return 1
