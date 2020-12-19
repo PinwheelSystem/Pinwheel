@@ -3,6 +3,8 @@ github.com/PinwheelSystem/PaletteNom v0.0.0-20201217221645-4734162cbf75 h1:XM95Q
 github.com/PinwheelSystem/PaletteNom v0.0.0-20201217221645-4734162cbf75/go.mod h1:VKVYJUoDlRWTw/t1lgngX5uLkmbCYzbWQ4NiotNzhaM=
 github.com/PinwheelSystem/bitmap v0.0.0-20201217214224-1f1e5f1005ac h1:0Rv/gpKFevF49KxKEP11x566YOW5upK/KOX9LvJ2UL8=
 github.com/PinwheelSystem/bitmap v0.0.0-20201217214224-1f1e5f1005ac/go.mod h1:ZoIaTfMgsZcB025jsmYlm+dUAnTpFl2wV3MxfO+xb+U=
+github.com/PinwheelSystem/bitmap v0.0.0-20201219205654-dde25ed9f0ab h1:6qpfNI7TNwbmhqjHV0EyiFziwBaXR7u7HOgd1zLv2Tg=
+github.com/PinwheelSystem/bitmap v0.0.0-20201219205654-dde25ed9f0ab/go.mod h1:ZoIaTfMgsZcB025jsmYlm+dUAnTpFl2wV3MxfO+xb+U=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9 h1:xz6Nv3zcwO2Lila35hcb0QloCQsc38Al13RNEzWRpX4=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9/go.mod h1:2wSM9zJkl1UQEFZgSd68NfCgRz1VL1jzy/RjCg+ULrs=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
