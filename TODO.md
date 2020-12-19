@@ -1,0 +1,10 @@
+- [ ] Input
+  - [ ] Keyboard
+  - [ ] Joypad/Game Controller
+- [ ] Sprites
+- [ ] Constants
+  - [ ] *Screen* width and height (not the window itself)
+- [ ] Memory Mapped I/O
+- [ ] RAM
+- [ ] VRAM
+- [ ] Sound
