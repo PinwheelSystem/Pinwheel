@@ -257,8 +257,9 @@ func PWprint(L *lua.LState) int {
 	yy := y
 
 	for _, ch := range text {
-		for i := 0; i < 8; i++ {
-		 	bin := font[string(ch)].Data[i]
+		char := font[string(ch)]
+		for i := 0; i < char.Height; i++ {
+		 	bin := char.Data[i]
 			binarr := strings.Split(bin, "")
 
 			for _, pix := range binarr {
@@ -268,7 +269,7 @@ func PWprint(L *lua.LState) int {
 			yy += 1
 			xx = x
 		}
-		sx += font[string(ch)].Width
+		sx += char.Width
 		yy = y
 	}
 
