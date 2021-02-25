@@ -1,10 +1,18 @@
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/PinwheelSystem/PaletteNom v0.0.0-20201217221645-4734162cbf75 h1:XM95QV+SEE19IpyvmWY4Ke1IJUGWo/3e51Qky8ZtQOI=
 github.com/PinwheelSystem/PaletteNom v0.0.0-20201217221645-4734162cbf75/go.mod h1:VKVYJUoDlRWTw/t1lgngX5uLkmbCYzbWQ4NiotNzhaM=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220022239-29d10724a466 h1:/4GLVfDSwV5znhbyaTJQmpk3ugZW/9m2wSK7kZ+CJoI=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220022239-29d10724a466/go.mod h1:VKVYJUoDlRWTw/t1lgngX5uLkmbCYzbWQ4NiotNzhaM=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220023853-a7fa90d93111 h1:S7zFa/l7r+0gM3+1/3yfuelMBWx5a0XMU0wnKeBEQ5s=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220023853-a7fa90d93111/go.mod h1:VKVYJUoDlRWTw/t1lgngX5uLkmbCYzbWQ4NiotNzhaM=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220025925-89cc52a798a6 h1:TQfBPOEANatR1hZAswR1nBeIKR5naMsHrYvIfvA/T1c=
+github.com/PinwheelSystem/PaletteNom v0.0.0-20201220025925-89cc52a798a6/go.mod h1:VKVYJUoDlRWTw/t1lgngX5uLkmbCYzbWQ4NiotNzhaM=
 github.com/PinwheelSystem/bitmap v0.0.0-20201217214224-1f1e5f1005ac h1:0Rv/gpKFevF49KxKEP11x566YOW5upK/KOX9LvJ2UL8=
 github.com/PinwheelSystem/bitmap v0.0.0-20201217214224-1f1e5f1005ac/go.mod h1:ZoIaTfMgsZcB025jsmYlm+dUAnTpFl2wV3MxfO+xb+U=
 github.com/PinwheelSystem/bitmap v0.0.0-20201219205654-dde25ed9f0ab h1:6qpfNI7TNwbmhqjHV0EyiFziwBaXR7u7HOgd1zLv2Tg=
 github.com/PinwheelSystem/bitmap v0.0.0-20201219205654-dde25ed9f0ab/go.mod h1:ZoIaTfMgsZcB025jsmYlm+dUAnTpFl2wV3MxfO+xb+U=
+github.com/akamensky/argparse v1.2.2 h1:P17T0ZjlUNJuWTPPJ2A5dM1wxarHgHqfYH+AZTo2xQA=
+github.com/akamensky/argparse v1.2.2/go.mod h1:S5kwC7IuDcEr5VeXtGPRVZ5o/FdhcMlQz4IZQuw64xA=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9 h1:xz6Nv3zcwO2Lila35hcb0QloCQsc38Al13RNEzWRpX4=
 github.com/chuckpreslar/emission v0.0.0-20170206194824-a7ddd980baf9/go.mod h1:2wSM9zJkl1UQEFZgSd68NfCgRz1VL1jzy/RjCg+ULrs=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
@@ -33,6 +41,8 @@ github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da h1:NimzV1aGyq29m5u
 github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da/go.mod h1:E1AXubJBdNmFERAOucpDIxNzeGfLzg0mYh+UfMWdChA=
 golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 h1:QelT11PB4FXiDEXucrfNckHoFxwt8USGY1ajP1ZF5lM=
 golang.org/x/image v0.0.0-20200927104501-e162460cd6b5/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
+golang.org/x/image v0.0.0-20201208152932-35266b937fa6 h1:nfeHNc1nAqecKCy2FCy4HY+soOOe5sDLJ/gZLbx6GYI=
+golang.org/x/image v0.0.0-20201208152932-35266b937fa6/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/sys v0.0.0-20190204203706-41f3e6584952/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 layeh.com/gopher-luar v1.0.8 h1:Uqws1Z6T0vK6pZ7ehNNurLLSFcz7+E0EOHVM4FNiMQs=
