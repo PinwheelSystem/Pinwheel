@@ -12,8 +12,8 @@
 
 Pinwheel is an all new fantasy computer, developed in Go and designed for ease of use and simplicity,
 and highly customizable where applicable (and wanted..!).  
-It is currently in the VERY early alpha-ish stage, and isn't meant for normal, ordinary use yet.  
-Stay tuned though, I'm spending my entire holiday to work on this little thing as much I can.
+It is currently in an alpha state and isn't meant for use yet, though 
+I'd like for you to test it out! 
 
 # Planned Features 
 - Customizable Palette of 64 COLORS (by program and/or user)
@@ -36,8 +36,7 @@ soon:tm:
 1. Download the repository
   - From GitHub: https://github.com/PinwheelSystem/Pinwheel/archive/master.zip
   - Or with Git: `git clone https://github.com/PinwheelSystem/Pinwheel`
-2. Open a terminal, change to the downloaded repo and run: `go build -o Pinwheel .`
-  - Windows users will have to add the `.exe` to `Pinwheel`
+2. Open a terminal, change to the downloaded repo and run: `go build`
 3. Assuming there are no errors, you should be able to run `./Pinwheel`.  
 The first argument is the Lua source to run, for example to run a program: `./Pinwheel game.lua`
 
