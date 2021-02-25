@@ -11,8 +11,7 @@ import (
 	"github.com/yuin/gopher-lua"
 	"github.com/PinwheelSystem/bitmap"
 	"github.com/PinwheelSystem/PaletteNom"
-	"github.com/chuckpreslar/emission"
-	"layeh.com/gopher-luar"
+	"github.com/akamensky/argparse"
 )
 
 const version = "v0.1.0"
@@ -23,116 +22,59 @@ var pixelbuf []byte = make([]byte, res * res * 4) // Pixel backbuffer (basically
 var start time.Time
 var font map[string]bitmap.Glyph
 var renderer *sdl.Renderer
+var pinwheel Pinwheel
 
 func main() {
+	parser := argparse.NewParser("pinwheel", "An awesome little fantasy computer designed to be simple.")
+
+	palettedir := parser.String("P", "palettedir", &argparse.Options{
+	 	Required: false,
+		Help: "The palette folder path",
+		Default: "Palettes/",
+	})
+
+	palettefile := parser.String("m", "palette", &argparse.Options{
+	 	Required: false,
+		Help: "Name of the palette image file",
+		Default: "AAP-64.png",
+	})
+
+	fontfile := parser.String("f", "font", &argparse.Options{
+	 	Required: false,
+		Help: "Name of the bitmap font file",
+		Default: "m5x7.png",
+	})
+
+	program := parser.String("p", "program", &argparse.Options{
+	 	Required: false,
+		Help: "Path to a Pinwheel program",
+		Default: "program.lua",
+	})
+
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+	}
+
+	data := map[string]interface{}{
+		"palettedir": *palettedir,
+		"palettefile": *palettefile,
+		"fontfile": *fontfile,
+		"program": *program,
+	}
+
 	palettelib := palettenom.New()
-	colors/*, _*/ := palettelib.Load("aap-64.png")
+	colors, err := palettelib.Load(*palettedir + "AAP-64.png")
 	bm := bitmap.New()
 	font = bm.Load("m5x7.png")
-	emitter := emission.NewEmitter()
-	events := emitter
 
 	for i := uint8(0); i < 64; i++ {
-		r, g, b, _ := colors[i].RGBA()
+		r, g, b, _ := colors[i].RGBA()		
 		palette[i] = []uint8{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8)}
 	}
 
-	var program string = "program.lua"
-	if len(os.Args) != 1{
-		program = os.Args[1] 
-	}
-	
-	L := lua.NewState()
-
-	// Load Lua standard library
-	L.OpenLibs()
-	// Register our functions
-	L.SetGlobal("vpoke", L.NewFunction(PWvPoke))
-	L.SetGlobal("plot", L.NewFunction(PWplot))
-	L.SetGlobal("termprint", L.NewFunction(PWtermPrint))
-	L.SetGlobal("time", L.NewFunction(PWtime))
-	L.SetGlobal("pchar", L.NewFunction(PWpchar))
-	L.SetGlobal("vertline", L.NewFunction(PWvertline))
-	L.SetGlobal("horizline", L.NewFunction(PWhorizline))
-	L.SetGlobal("clear", L.NewFunction(PWclear))
-	L.SetGlobal("print", L.NewFunction(PWprint))
-
-	// Add event emitter
-    L.SetGlobal("events", luar.New(L, events))
-
-	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(err)
-	}
-	defer sdl.Quit()
-
-	wintitle := "Pinwheel " + version
-
-	window, err := sdl.CreateWindow(wintitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, int32(res * scale), int32(res * scale), sdl.WINDOW_SHOWN)
-	if err != nil {
-		panic(err)
-	}
-	defer window.Destroy()
-
-	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		panic(err)
-	}
-	defer renderer.Destroy()
-
-	//cursortexture, _ := sdl.LoadBMP("cursor.bmp")
-	//cursor := sdl.CreateColorCursor(cursortexture, 0, 0)
-
-	screen, err := renderer.CreateTexture(sdl.PIXELFORMAT_ARGB8888, sdl.TEXTUREACCESS_STREAMING, int32(res), int32(res))
-	if err != nil {
-		panic(err)
-	}
-	defer screen.Destroy()
-
-	if err := L.DoFile(program); err != nil {
-		panic(err)
-	}
-	defer L.Close()
-
-	// "CPU Cycle," our main loop
-	running := true
-	start = time.Now()
-	c := palette[0]
-	renderer.SetDrawColor(c[0], c[1], c[2], sdl.ALPHA_OPAQUE)
-	//sdl.SetCursor(cursor)
-	for running {
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch e := event.(type) {
-				case *sdl.QuitEvent:
-					running = false
-					break
-				case *sdl.MouseButtonEvent:
-					if e.Type == sdl.MOUSEBUTTONDOWN { emitter.Emit("mouseClick", e.X, e.Y) }
-				case *sdl.MouseMotionEvent:
-					if _, _, state := sdl.GetMouseState(); state & sdl.Button(sdl.BUTTON_LEFT) == 1 {
-						emitter.Emit("mouseDrag", e.X, e.Y)
-					}
-					emitter.Emit("mouseMove", e.X, e.Y)
-			}
-		}
-
-		// Call the Spin function from Lua
-		if err := L.CallByParam(lua.P{
-			Fn: L.GetGlobal("Spin"),
-			NRet: 0,
-			Protect: true,
-		}); err != nil {
-			panic(err)
-		}
-
-		// Update the screen with our pixel backbuffer
-		screen.Update(nil, pixelbuf, res * 4)
-		renderer.Copy(screen, nil, nil)
-
-		// Flush screen
-		renderer.Present()
-
-		time.Sleep(16 * time.Millisecond)
-	}
+	pinwheel = Init(data)
+	pinwheel.Start()	
 }
 
 func randf(r int) int {
@@ -143,6 +85,7 @@ func randf(r int) int {
 func PWvPoke(L *lua.LState) int {
 	addr := L.ToInt(1)
 	val := L.ToInt(2)
+	pixelbuf := *pinwheel.vram
 
 	pixelbuf[addr] = byte(val)
 
@@ -278,7 +221,8 @@ func PWprint(L *lua.LState) int {
 }
 
 func setpixel(x, y, r, g, b int) {
-	offset := ( res * 4 * y ) + x * 4;
+	offset := ( pinwheel.screen.Width * 4 * y ) + x * 4;
+	pixelbuf := *pinwheel.vram
 	pixelbuf[offset + 0] = byte(b)
 	pixelbuf[offset + 1] = byte(g)
 	pixelbuf[offset + 2] = byte(r)
