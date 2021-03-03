@@ -156,7 +156,7 @@ func PWvertline(L *lua.LState) int {
 	x := L.ToInt(1)
 	color := L.ToInt(2)
 	
-	for i := 0; i < res; i++ {
+	for i := 0; i < pinwheel.screen.Height; i++ {
 		c := palette[color]
 		setpixel(x, i, int(c[0]), int(c[1]), int(c[2]))
 	}
@@ -169,7 +169,7 @@ func PWhorizline(L *lua.LState) int {
 	y := L.ToInt(1)
 	color := L.ToInt(2)
 	
-	for i := 0; i < res; i++ {
+	for i := 0; i < pinwheel.screen.Width; i++ {
 		c := palette[color]
 		setpixel(i, y, int(c[0]), int(c[1]), int(c[2]))
 	}
@@ -180,8 +180,8 @@ func PWhorizline(L *lua.LState) int {
 func PWclear(L *lua.LState) int {
 	c := palette[0]
 
-	for y := 0; y < res; y++ {
-		for x := 0; x < res; x++ {
+	for y := 0; y < pinwheel.screen.Height; y++ {
+		for x := 0; x < pinwheel.screen.Width; x++ {
 			setpixel(x, y, int(c[0]), int(c[1]), int(c[2]))
 		}
 	}
