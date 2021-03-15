@@ -64,7 +64,10 @@ func main() {
 	}
 
 	palettelib := palettenom.New()
-	colors, err := palettelib.Load(*palettedir + "AAP-64.png")
+	colors, err := palettelib.Load(*palettedir + *palettefile)
+	if err != nil {
+		panic(err)
+	}
 	bm := bitmap.New()
 	font = bm.Load("m5x7.png")
 
