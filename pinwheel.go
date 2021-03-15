@@ -59,6 +59,7 @@ func (p *Pinwheel) Start() {
 	p.l.SetGlobal("termprint", p.l.NewFunction(PWtermPrint))
 	p.l.SetGlobal("time", p.l.NewFunction(PWtime))
 	p.l.SetGlobal("pchar", p.l.NewFunction(PWpchar))
+	p.l.SetGlobal("line", p.l.NewFunction(PWline))
 	p.l.SetGlobal("vertline", p.l.NewFunction(PWvertline))
 	p.l.SetGlobal("horizline", p.l.NewFunction(PWhorizline))
 	p.l.SetGlobal("clear", p.l.NewFunction(PWclear))

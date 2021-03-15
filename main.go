@@ -1,10 +1,13 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 	"fmt"
 	"time"
 	"os"
+	"io/fs"
+	"errors"
 	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -65,8 +68,12 @@ func main() {
 
 	palettelib := palettenom.New()
 	colors, err := palettelib.Load(*palettedir + *palettefile)
-	if err != nil {
-		panic(err)
+	var pathError *fs.PathError
+	if errors.As(err, &pathError) {
+		fmt.Println("Could not find palette file", *palettefile, "in the", pathError.Path[:len(*palettedir)], "directory. Are you sure it exists?")
+		os.Exit(1)
+	} else {
+		fmt.Println(err)
 	}
 	bm := bitmap.New()
 	font = bm.Load("m5x7.png")
@@ -154,6 +161,32 @@ func PWpchar(L *lua.LState) int {
 	return 1
 }
 
+// line(x1, y1, x2, y2, color)
+func PWline(L *lua.LState) int {
+	// TODO: Clean up this garbage
+	x1 := L.ToInt(1)
+	y1 := L.ToInt(2)
+	x2 := L.ToInt(3)
+	y2 := L.ToInt(4)
+	color := L.ToInt(5)
+
+	x := float64(x2 - x1)
+	y := float64(y2 - y1)
+	length := math.Sqrt(float64((x*x) + (y*y)))
+	addx := float64(x) / length
+	addy := float64(y) / length
+	x = float64(x1)
+	y = float64(y1)
+
+	for i := float64(0); i < length; i++ {
+		c := palette[color]
+		setpixel(int(x), int(y), int(c[0]), int(c[1]), int(c[2]))
+		x += addx
+		y += addy
+	}
+
+	return 1
+}
 // vertline(x, color)
 func PWvertline(L *lua.LState) int {
 	x := L.ToInt(1)
