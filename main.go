@@ -72,9 +72,8 @@ func main() {
 	if errors.As(err, &pathError) {
 		fmt.Println("Could not find palette file", *palettefile, "in the", pathError.Path[:len(*palettedir)], "directory. Are you sure it exists?")
 		os.Exit(1)
-	} else {
-		fmt.Println(err)
 	}
+	
 	bm := bitmap.New()
 	font = bm.Load("m5x7.png")
 
